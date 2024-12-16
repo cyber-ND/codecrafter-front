@@ -80,7 +80,7 @@ export default{
        async fetchUser(){
            try {
             const token = localStorage.getItem('token')
-            const response = await axios.get(`http://localhost:3000/api/users/${this.$route.params.id}`, {
+            const response = await axios.get(`https://codecrafter-backend.onrender.com/api/users/${this.$route.params.id}`, {
                 headers:{
                     Authorization: `Bearer ${token}`
                 }
@@ -95,7 +95,7 @@ export default{
             this.loading = true
             try {
               const token = localStorage.getItem('token')
-            await axios.put(`http://localhost:3000/api/users/${this.$route.params.id}`, this.user, {
+            await axios.put(`https://codecrafter-backend.onrender.com/api/users/${this.$route.params.id}`, this.user, {
                 headers:{
                     Authorization: `Bearer ${token}`
                 }
