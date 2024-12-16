@@ -7,8 +7,18 @@
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <router-link to="/" class="hover: bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Home</router-link>
-                    <router-link to="/users" class="hover: bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Users</router-link>
+                    <router-link to="/" class="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Home</router-link>
+                    <router-link to="/users" class="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Users</router-link>
+
+                   <div v-if="!isAuthenticated">
+                    <router-link to="/login" class="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Login</router-link>
+                    <router-link to="/register" class="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Register</router-link>
+                   </div>
+
+                   <div v-else>
+                     <button class="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium" @click="logout">Logout</button>                    
+                   </div>
+                   
                 </div>
             </div>
         </div>
@@ -61,10 +71,20 @@ export default{
             loading: false,
         }
     },
+    computed: {
+    isAuthenticated(){
+        return !! localStorage.getItem('token');
+    }
+  },
     methods:{
        async fetchUser(){
            try {
-            const response = await axios.get(`http://localhost:3000/api/users/${this.$route.params.id}`)
+            const token = localStorage.getItem('token')
+            const response = await axios.get(`http://localhost:3000/api/users/${this.$route.params.id}`, {
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            })
             this.user = response.data;
            } catch (error) {
             console.log("Error fetching users:", error);
@@ -74,7 +94,12 @@ export default{
         async updateUser(){
             this.loading = true
             try {
-            await axios.put(`http://localhost:3000/api/users/${this.$route.params.id}`, this.user)
+              const token = localStorage.getItem('token')
+            await axios.put(`http://localhost:3000/api/users/${this.$route.params.id}`, this.user, {
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            })
             this.$toast.success('User updated Successfully!!!');
             this.$router.push('/users')
            } catch (error) {
@@ -83,7 +108,11 @@ export default{
            } finally{
             this.loading = false
            }
-        }
+        },
+        logout(){
+        localStorage.removeItem('token');
+        this.$router.push('/login')
+    }
         
 
     },
